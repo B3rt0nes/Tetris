@@ -1,101 +1,113 @@
-// #include <iostream>
-// #include <stdio.h>
-// #include <stdlib.h>
-// #include <ncurses.h>
-
-// using namespace std;
-
-
-
-// int main (int argc, char ** argv) {
-    
-// // START
-//     initscr();
-//     noecho();
-//     cbreak();
-//     curs_set(0);
-    
-//     int maxY, maxX;
-//     getmaxyx(stdscr, maxY, maxX); // get screen size
-
-//     // gameTitle(xMax, yMax);
-
-// // COME CREARE IL MENU
-//     WINDOW * menuwin = newwin(5, maxX-12, maxY/2+4, 5);
-//     wborder(menuwin, 0, 0, (int)'=', (int)'=', (int)'<', (int)'>', (int)'<', (int)'>');
-//     refresh();
-//     wrefresh(menuwin);
-//     keypad(menuwin, true); // to get key input (up, down, left, right);
-//     nodelay(stdscr, TRUE);
-
-//     int menuyMax, menuxMax;
-//     getmaxyx(menuwin, menuyMax, menuxMax);
-
-//     string scelte[3] = {"start", "continue", "info"};
-//     int choice;
-//     int highlights = 0;
-
-//     // loadItems();
-//     bool open = true;
-//     while (open){
-//         for (int i = 0; i < 3; i++){ // costruisco il menu
-//             if (i == highlights) wattron(menuwin, A_REVERSE);
-//             mvwprintw(menuwin, i+1, menuxMax/2-10, "%s", scelte[i].c_str());
-//             wattroff(menuwin, A_REVERSE);
-//         }
-//         choice = wgetch(menuwin);
-
-//         switch(choice){            // mi muovo nel menu
-//             case KEY_UP:
-//                 highlights--;
-//                 if (highlights == -1) highlights = 0;
-//                 break;
-//             case KEY_DOWN:
-//                 highlights++;
-//                 if (highlights == 3) highlights = 2;
-//                 break;
-//             case 10: 
-//                 open = false;
-//                 break;
-//             default:
-//                 break;
-//         }
-//     }
-
-//     if (highlights <= 1){
-//         clear();
-//         // if(highlights == 1) current_game.continueLast();
-//         // start();
-//     }
-
-//     getch();
-//     endwin();
-//     /*END*/
-
-//     return 0;
-// }
-
+#include <iostream>
 #include <ncurses.h>
+#include <array>
 
-int main() {
-    initscr(); // inizializza ncurses
-    noecho(); // disabilita l'eco dell'input
-    cbreak(); // disabilita la bufferizzazione dell'input
+using namespace std;
 
-    int height = 10;
-    int width = 20;
-    int start_y = (LINES - height) / 2; // centra la finestra verticalmente
-    int start_x = (COLS - width) / 2; // centra la finestra orizzontalmente
+void start();
 
-    WINDOW *win = newwin(height, width, start_y, start_x); // crea una nuova finestra
+const int mH = 15;
+const int mW = 30;
+// const int  = 4;
+// const int  = 5;
 
-    box(win, 0, 0); // disegna una scatola attorno alla finestra
-    mvwprintw(win, 1, 1, "Ciao, mondo!"); // stampa una stringa nella finestra
-    wrefresh(win); // aggiorna la finestra
+int main (int argc, char ** argv) {
+    initscr();      // start ncurses
+    noecho();       // don't print input values
+    cbreak();       // terminate ncurses on ctrl + c
+    curs_set(0);    // hide the cursor
+    
+    int yMax, xMax; // to store the size of the window
+    getmaxyx(stdscr, yMax, xMax); // get screen size
 
-    getch(); // aspetta che l'utente prema un tasto
-    delwin(win); // rilascia la finestra
+    WINDOW * menuwin = newwin(mH, mW, (yMax-mH)/2, (xMax-mW)/2);
+    wborder(menuwin, '|', '|', '-', '-', '+', '+', '+', '+'); // set the border
+    refresh();      // refresh the screen
+    wrefresh(menuwin);  // refresh the menuwin
+    keypad(menuwin, true); // to get key input (up, down, left, right);
+    nodelay(stdscr, TRUE); // to not wait for input
 
-    endwin(); // termina ncurses
+    int menuyMax, menuxMax; 
+    getmaxyx(menuwin, menuyMax, menuxMax);
+
+    array<string, 3> scelte = {"start", "Classifica", "info"};
+    int choice; 
+    int highlight = 0;
+
+    while(1) { // loop until a choice is made
+        for(int i = 0; i < scelte.size(); i++) { // print all choices
+            if(i == highlight) // highlight the current choice
+                wattron(menuwin, A_REVERSE); 
+            mvwprintw(menuwin, i+1, 1, scelte[i].c_str());
+            wattroff(menuwin, A_REVERSE);
+        }
+        choice = wgetch(menuwin); // get user input
+
+        switch(choice) {
+            case KEY_UP:
+                highlight--;
+                if(highlight < 0)
+                    highlight = 0;
+                break;
+            case KEY_DOWN:
+                highlight++;
+                if(highlight > scelte.size()-1)
+                    highlight = scelte.size()-1;
+                break;
+            default:
+                break;
+        }
+        if(choice == 10) // if the user presses enter
+            break;
+    }
+    // handle the choice
+    switch(highlight) {
+        case 0:
+            start();
+            break;
+        case 1:
+            // Classifica
+            break;
+        case 2:
+            // info
+            break;
+        default:
+            break;
+    }
+
+    getch();
+    endwin();
+    delwin(menuwin); // delete the window to free memory
+
     return 0;
+}
+
+void start() {
+    int yMax, xMax; // to store the size of the window
+    getmaxyx(stdscr, yMax, xMax); // get screen size
+
+    if (xMax < 35 || yMax < 35) {
+        cout << "La finestra è troppo piccola, ingrandiscila e riprova" << endl;
+        return;
+    }
+
+    /*FINESTRA GIOCO*/
+    WINDOW * gamewin = newwin(35, 35, (yMax-35)/2, (xMax-35)/2);
+    box(gamewin, 0, 0);
+    keypad(gamewin, true); // to get key input (up, down, left, right);
+    nodelay(stdscr, TRUE); // to not wait for input
+    int gmYMax, gmXMax;
+    getmaxyx(gamewin, gmYMax, gmXMax);
+
+    /*FINESTRA INFO*/
+
+    /*LOOP DI GIOCO*/
+    bool loop = true;
+
+    while (loop){
+        box(gamewin, 0, 0);
+        wborder(gamewin, '|', '|', '-', '-', '+', '+', '+', '+'); // set the border
+        wrefresh(gamewin);
+    }
+    
 }
