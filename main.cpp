@@ -10,6 +10,10 @@ const int mH = 15;
 const int mW = 30;
 // const int  = 4;
 // const int  = 5;
+string info[4] = {  "Punteggio:\t", 
+                    "Livello:\t", 
+                    "Linee:\t" , 
+                    "Tempo:\t"};
 
 int main (int argc, char ** argv) {
     initscr();      // start ncurses
@@ -21,7 +25,7 @@ int main (int argc, char ** argv) {
     getmaxyx(stdscr, yMax, xMax); // get screen size
 
     WINDOW * menuwin = newwin(mH, mW, (yMax-mH)/2, (xMax-mW)/2);
-    wborder(menuwin, '|', '|', '-', '-', '+', '+', '+', '+'); // set the border
+    wborder(menuwin, '#', '#', '=', '=', '#', '#', '#', '#'); // set the border
     refresh();      // refresh the screen
     wrefresh(menuwin);  // refresh the menuwin
     keypad(menuwin, true); // to get key input (up, down, left, right);
@@ -30,15 +34,15 @@ int main (int argc, char ** argv) {
     int menuyMax, menuxMax; 
     getmaxyx(menuwin, menuyMax, menuxMax);
 
-    array<string, 3> scelte = {"start", "Classifica", "info"};
+    string scelte[3] = {"start", "classifica", "info"};
     int choice; 
     int highlight = 0;
 
     while(1) { // loop until a choice is made
-        for(int i = 0; i < scelte.size(); i++) { // print all choices
+        for(int i = 0; i < 3; i++) { // print all choices
             if(i == highlight) // highlight the current choice
                 wattron(menuwin, A_REVERSE); 
-            mvwprintw(menuwin, i+1, 1, scelte[i].c_str());
+            mvwprintw(menuwin, i+1, 3, scelte[i].c_str());
             wattroff(menuwin, A_REVERSE);
         }
         choice = wgetch(menuwin); // get user input
@@ -51,8 +55,8 @@ int main (int argc, char ** argv) {
                 break;
             case KEY_DOWN:
                 highlight++;
-                if(highlight > scelte.size()-1)
-                    highlight = scelte.size()-1;
+                if(highlight > 3-1)
+                    highlight = 3-1;
                 break;
             default:
                 break;
@@ -100,14 +104,31 @@ void start() {
     getmaxyx(gamewin, gmYMax, gmXMax);
 
     /*FINESTRA INFO*/
-
+    WINDOW * infowin = newwin(17, 23, (yMax/2)-17, (xMax/2-40));
+    box(infowin, 0, 0);
+    nodelay(stdscr, TRUE);
+    
     /*LOOP DI GIOCO*/
     bool loop = true;
 
     while (loop){
         box(gamewin, 0, 0);
-        wborder(gamewin, '|', '|', '-', '-', '+', '+', '+', '+'); // set the border
+        box(infowin, 0, 0);
+        wborder(gamewin, '#', '#', '=', '=', '=', '=', '=', '='); // set the border
+        wborder(infowin, '#', ' ', '=', '=', '=', '=', '=', '='); // set the border
+
+        for(int i = 0; i < 4; i++) { // print all choices
+            mvwprintw(infowin, i+1, 2, info[i].c_str());
+        }
+        
+
+
+
+
+
+
         wrefresh(gamewin);
+        wrefresh(infowin);
     }
     
 }
