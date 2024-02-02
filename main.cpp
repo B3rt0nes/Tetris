@@ -1,6 +1,11 @@
 #include <iostream>
 #include <ncurses.h>
 #include <array>
+#include <ctime>
+#include <cstdlib>
+#include "grid.h"
+#include "blocks.cpp"
+
 
 using namespace std;
 
@@ -8,19 +13,36 @@ void start();
 
 const int mH = 15;
 const int mW = 30;
-// const int  = 4;
-// const int  = 5;
-string info[4] = {  "Punteggio:\t", 
-                    "Livello:\t", 
-                    "Linee:\t" , 
-                    "Tempo:\t"};
+const int dimensione = 42;
+string info[4] = {  "Punteggio:\t", "Livello:\t", "Linee:\t" , "Tempo:\t"};
 
 int main (int argc, char ** argv) {
     initscr();      // start ncurses
     noecho();       // don't print input values
     cbreak();       // terminate ncurses on ctrl + c
     curs_set(0);    // hide the cursor
+
+    start_color(); // inizializza i colori
+    init_pair(1, COLOR_BLACK,   COLOR_BLACK);   // 1 -> Background
+    init_pair(2, COLOR_CYAN,    COLOR_CYAN);    // 2 -> I
+    init_pair(3, COLOR_WHITE,     COLOR_RED);     // 3 -> Z
+    init_pair(4, COLOR_GREEN,   COLOR_GREEN);   // 4 -> S
+    init_pair(5, COLOR_BLUE,    COLOR_BLUE);    // 5 -> J
+    init_pair(6, COLOR_MAGENTA, COLOR_MAGENTA); // 6 -> T
+    init_pair(7, COLOR_YELLOW,  COLOR_YELLOW);  // 7 -> O
+    init_pair(8, COLOR_WHITE,   COLOR_WHITE);   // 8 -> L
     
+
+    // init_pair(1, COLOR_WHITE,   COLOR_BLACK);   // 1 -> Background
+    // init_pair(2, COLOR_WHITE,    COLOR_CYAN);    // 2 -> I
+    // init_pair(3, COLOR_WHITE,     COLOR_RED);     // 3 -> Z
+    // init_pair(4, COLOR_WHITE,   COLOR_GREEN);   // 4 -> S
+    // init_pair(5, COLOR_WHITE,    COLOR_BLUE);    // 5 -> J
+    // init_pair(6, COLOR_WHITE, COLOR_MAGENTA); // 6 -> T
+    // init_pair(7, COLOR_WHITE,  COLOR_YELLOW);  // 7 -> O
+    // init_pair(8, COLOR_WHITE,   COLOR_WHITE);   // 8 -> L
+
+
     int yMax, xMax; // to store the size of the window
     getmaxyx(stdscr, yMax, xMax); // get screen size
 
@@ -67,6 +89,7 @@ int main (int argc, char ** argv) {
     // handle the choice
     switch(highlight) {
         case 0:
+            delwin(menuwin);
             start();
             break;
         case 1:
@@ -87,16 +110,17 @@ int main (int argc, char ** argv) {
 }
 
 void start() {
+// TUTTE LE FUNZIONI PER LE FINESTRE...
     int yMax, xMax; // to store the size of the window
     getmaxyx(stdscr, yMax, xMax); // get screen size
 
-    if (xMax < 35 || yMax < 35) {
+    if (xMax < dimensione || yMax < dimensione) {
         cout << "La finestra è troppo piccola, ingrandiscila e riprova" << endl;
         return;
     }
 
     /*FINESTRA GIOCO*/
-    WINDOW * gamewin = newwin(35, 35, (yMax-35)/2, (xMax-35)/2);
+    WINDOW * gamewin = newwin(dimensione, dimensione, (yMax-dimensione)/2, (xMax-dimensione)/2);
     box(gamewin, 0, 0);
     keypad(gamewin, true); // to get key input (up, down, left, right);
     nodelay(stdscr, TRUE); // to not wait for input
@@ -104,31 +128,65 @@ void start() {
     getmaxyx(gamewin, gmYMax, gmXMax);
 
     /*FINESTRA INFO*/
-    WINDOW * infowin = newwin(17, 23, (yMax/2)-17, (xMax/2-40));
-    box(infowin, 0, 0);
-    nodelay(stdscr, TRUE);
-    
+    // WINDOW * infowin = newwin(17, 23, (yMax/2)-17, (xMax/2-40));
+    // box(infowin, 0, 0);
+    // nodelay(stdscr, TRUE);
+
+// OGGETTI DALLE CLASSI
+    Grid grid = Grid();
+    OBloc block = OBloc();
+
     /*LOOP DI GIOCO*/
     bool loop = true;
-
+    bool isTetramino = false;
+    int cont = 0;
     while (loop){
-        box(gamewin, 0, 0);
-        box(infowin, 0, 0);
-        wborder(gamewin, '#', '#', '=', '=', '=', '=', '=', '='); // set the border
-        wborder(infowin, '#', ' ', '=', '=', '=', '=', '=', '='); // set the border
+        // box(infowin, 0, 0);
+        // wborder(infowin, '#', ' ', '=', '=', '#', '=', '#', '='); // set the border
+        // for(int i = 0; i < 4; i++) { // print all choices
+        //     mvwprintw(infowin, i+1, 2, info[i].c_str());
+        // }
 
-        for(int i = 0; i < 4; i++) { // print all choices
-            mvwprintw(infowin, i+1, 2, info[i].c_str());
+// ==================================================
+        /*{
+            for (int x = 1; x < dimensione-1; x++) {
+            for (int y = 1; y < dimensione-1; y++) {
+                mvwprintw(gamewin, x, y, "%c", matrice[x][y]);
+            }
         }
         
+        {
+            if (!isTetramino) { // se non c'è un tetramino
 
-
-
+            char tetraminoChar = gameControl.generateRandomTetramin();  // genera un tetramino random
+            // tetraminoObj.setTetramino(tetraminoChar);                   // setta il tetramino
+            tetraminoObj.setTetraminoMatrix(tetraminoChar, tetraminoObj.tetraminoMatrix); // setta la matrice del tetramino
+            
+            for (int x = 0; x < 4; x++) {   // add on top of the game matrix the tetramino
+                for (int y = 0; y < 4; y++) {
+                    if (tetraminoObj.tetraminoMatrix[x][y] != ' ') {
+                        matrice[x][y+13] = tetraminoObj.tetraminoMatrix[x][y];
+                    }
+                }
+            }
+            isTetramino = true;
+        } if (isTetramino){
+            // muovi tetramino
+            tetraminoObj.moveTetramino(10, 10);
+        }
+        }*/
+        
+        // 1. EVENT HANDLING
+        // 2. UPDATING POSITIONS
+        // 3. DRWING OBJECTS
+        // grid.printGrid(gamewin);
+        block.Draw(gamewin, 0);
 
 
 
         wrefresh(gamewin);
-        wrefresh(infowin);
+        // wrefresh(infowin);
+        cont++;
     }
     
 }
