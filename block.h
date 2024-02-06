@@ -14,10 +14,14 @@ struct position{
 
 class Block {
     private:
-        
+        int rotationState;
+        int rowOffset;  
+        int colOffset;
     public:
         Block();
         int id;
         position cells[4];
         void Draw(WINDOW *, int);
+        void move(int, int);
+        position getPos();
 };

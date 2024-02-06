@@ -5,8 +5,9 @@ class Grid {
         int numRow;
         int numCol;
     public:
+        char grid[22][22];
+        
         Grid();
-        char grid[42][42];
         void initGrid();
         void printGrid(WINDOW * win);
 };

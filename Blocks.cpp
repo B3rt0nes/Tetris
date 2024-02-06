@@ -82,6 +82,8 @@ class IBloc : public Block {
             cells[3].pos[6].y = 2;
             cells[3].pos[7].x = 3;
             cells[3].pos[7].y = 3;
+            
+            move(-1, 6);
         }
 };
 
@@ -157,6 +159,8 @@ class ZBloc : public Block {
             cells[3].pos[6].y = 0;
             cells[3].pos[7].x = 2;
             cells[3].pos[7].y = 1;
+            
+            move(0, 6);
         }
 };
 
@@ -232,6 +236,8 @@ class SBloc : public Block {
             cells[3].pos[6].y = 2;
             cells[3].pos[7].x = 2;
             cells[3].pos[7].y = 3;
+            
+            move(0, 6);
         }
 };
 
@@ -307,6 +313,8 @@ class JBloc : public Block {
             cells[3].pos[6].y = 2;
             cells[3].pos[7].x = 2;
             cells[3].pos[7].y = 3;
+            
+            move(0, 6);
         }
 };
 
@@ -382,31 +390,34 @@ class TBloc : public Block {
             cells[3].pos[6].y = 2;
             cells[3].pos[7].x = 2;
             cells[3].pos[7].y = 3;
+
+            move(0, 6);
         }
 };
 
 class OBloc : public Block {
     public:
         OBloc(){
+            // solo uno stato di rotazione
             id = 7;
-            for (int i = 0; i < 4; i++) {
-                cells[i].pos[0].x = 0;
-                cells[i].pos[0].y = 0;
-                cells[i].pos[1].x = 0;
-                cells[i].pos[1].y = 1;
-                cells[i].pos[2].x = 0;
-                cells[i].pos[2].y = 2;
-                cells[i].pos[3].x = 0;
-                cells[i].pos[3].y = 3;
-                cells[i].pos[4].x = 1;
-                cells[i].pos[4].y = 0;
-                cells[i].pos[5].x = 1;
-                cells[i].pos[5].y = 1;
-                cells[i].pos[6].x = 1;
-                cells[i].pos[6].y = 2;
-                cells[i].pos[7].x = 1;
-                cells[i].pos[7].y = 3;
-            }
+            cells[0].pos[0].x = 0;
+            cells[0].pos[0].y = 0;
+            cells[0].pos[1].x = 0;
+            cells[0].pos[1].y = 1;
+            cells[0].pos[2].x = 0;
+            cells[0].pos[2].y = 2;
+            cells[0].pos[3].x = 0;
+            cells[0].pos[3].y = 3;
+            cells[0].pos[4].x = 1;
+            cells[0].pos[4].y = 0;
+            cells[0].pos[5].x = 1;
+            cells[0].pos[5].y = 1;
+            cells[0].pos[6].x = 1;
+            cells[0].pos[6].y = 2;
+            cells[0].pos[7].x = 1;
+            cells[0].pos[7].y = 3;
+            
+            move(0, 8);
         }
 };
 
@@ -482,5 +493,7 @@ class LBloc : public Block {
             cells[3].pos[6].y = 2;
             cells[3].pos[7].x = 2;
             cells[3].pos[7].y = 3;
+            
+            move(0, 6);
         }
 };
