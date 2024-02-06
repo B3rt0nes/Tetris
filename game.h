@@ -19,4 +19,7 @@ class Game {
         Block currentBlock;
         Block nextBlock;
         bool isBlockOutside();
+        void rotateBlock();
+        void lockBlock();
+        bool blockFits();
 };

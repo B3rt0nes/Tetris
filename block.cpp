@@ -53,6 +53,20 @@ void Block::move(int row, int col){
     colOffset += col;
 }
 
+void Block::rotate() {
+    rotationState++;
+    if (rotationState > 3){
+        rotationState = 0;
+    }
+}
+
+void Block::undoRotation() {
+    rotationState--;
+    if (rotationState < 0){
+        rotationState = 3;
+    }
+}
+
 position Block::getPos(){
     position current = cells[rotationState];
     position moved;

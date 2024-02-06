@@ -23,5 +23,7 @@ class Block {
         position cells[4];
         void Draw(WINDOW *, int);
         void move(int, int);
+        void rotate();
+        void undoRotation();
         position getPos();
 };

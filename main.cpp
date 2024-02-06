@@ -1,6 +1,7 @@
 #include <iostream>
 #include <ncurses.h>
 #include <array>
+#include <ctime>
 
 #include "game.h"
 
@@ -8,6 +9,9 @@
 using namespace std;
 
 void start();
+// bool eventTrigger(double interval) {
+
+// }
 
 const int mH = 15;
 const int mW = 20;
@@ -147,6 +151,7 @@ void start() {
     WINDOW * gamewin = newwin(dimensione, dimensione, (yMax-dimensione)/2, (xMax)/2+1);
     box(gamewin, 0, 0); 
     keypad(gamewin, true); // to get key input (up, down, left, right);
+    nodelay(gamewin, TRUE); // to not wait for input
     nodelay(stdscr, TRUE); // to not wait for input
 
     /*FINESTRA INFO*/
@@ -164,8 +169,7 @@ void start() {
 
     /*LOOP DI GIOCO*/
     bool loop = true;
-    bool isTetramino = false;
-    int cont = 0;
+    double lastUpdateTime = 0;
     while (loop){
         box(infowin, 0, 0);
         wborder(infowin, '|', ' ', '-', '-', '+', '-', '+', '-'); // set the border
@@ -179,20 +183,21 @@ void start() {
 // ==================================================
 
         
-        // 1. EVENT HANDLING
-        // 2. UPDATING POSITIONS
-        // 3. DRWING OBJECTS
-        game.draw(gamewin);
-        // block.Draw(gamewin, 0);
-
 
         wrefresh(gamewin);
         wrefresh(infowin);
         wrefresh(classwin);
         
+        timeout(0); // Setta il timer a 0
+    
         game.handleInput(gamewin);
 
-        cont++;
+        // Se sono passati 200ms dall'ultimo aggiornamento, muovi il blocco in basso
+        if ((clock() - lastUpdateTime) / CLOCKS_PER_SEC >= 0.2) {
+            game.draw(gamewin);
+            game.MoveBlockDown();
+            lastUpdateTime = clock();
+        }
     }
     
 }

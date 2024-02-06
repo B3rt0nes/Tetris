@@ -357,22 +357,22 @@ class TBloc : public Block {
             cells[1].pos[7].x = 2;
             cells[1].pos[7].y = 3;
 
-            cells[2].pos[0].x = 1;
-            cells[2].pos[0].y = 0;
-            cells[2].pos[1].x = 1;
-            cells[2].pos[1].y = 1;
+            cells[2].pos[0].x = 0;
+            cells[2].pos[0].y = 2;
+            cells[2].pos[1].x = 0;
+            cells[2].pos[1].y = 3;
             cells[2].pos[2].x = 1;
-            cells[2].pos[2].y = 2;
+            cells[2].pos[2].y = 0;
             cells[2].pos[3].x = 1;
-            cells[2].pos[3].y = 3;
+            cells[2].pos[3].y = 1;
             cells[2].pos[4].x = 1;
-            cells[2].pos[4].y = 4;
+            cells[2].pos[4].y = 2;
             cells[2].pos[5].x = 1;
-            cells[2].pos[5].y = 5;
-            cells[2].pos[6].x = 2;
-            cells[2].pos[6].y = 2;
-            cells[2].pos[7].x = 2;
-            cells[2].pos[7].y = 3;
+            cells[2].pos[5].y = 3;
+            cells[2].pos[6].x = 1;
+            cells[2].pos[6].y = 4;
+            cells[2].pos[7].x = 1;
+            cells[2].pos[7].y = 5;
 
             cells[3].pos[0].x = 0;
             cells[3].pos[0].y = 2;
@@ -400,22 +400,24 @@ class OBloc : public Block {
         OBloc(){
             // solo uno stato di rotazione
             id = 7;
-            cells[0].pos[0].x = 0;
-            cells[0].pos[0].y = 0;
-            cells[0].pos[1].x = 0;
-            cells[0].pos[1].y = 1;
-            cells[0].pos[2].x = 0;
-            cells[0].pos[2].y = 2;
-            cells[0].pos[3].x = 0;
-            cells[0].pos[3].y = 3;
-            cells[0].pos[4].x = 1;
-            cells[0].pos[4].y = 0;
-            cells[0].pos[5].x = 1;
-            cells[0].pos[5].y = 1;
-            cells[0].pos[6].x = 1;
-            cells[0].pos[6].y = 2;
-            cells[0].pos[7].x = 1;
-            cells[0].pos[7].y = 3;
+            for (int i = 0; i < 4; i++) {
+                cells[i].pos[0].x = 0;
+                cells[i].pos[0].y = 0;
+                cells[i].pos[1].x = 0;
+                cells[i].pos[1].y = 1;
+                cells[i].pos[2].x = 0;
+                cells[i].pos[2].y = 2;
+                cells[i].pos[3].x = 0;
+                cells[i].pos[3].y = 3;
+                cells[i].pos[4].x = 1;
+                cells[i].pos[4].y = 0;
+                cells[i].pos[5].x = 1;
+                cells[i].pos[5].y = 1;
+                cells[i].pos[6].x = 1;
+                cells[i].pos[6].y = 2;
+                cells[i].pos[7].x = 1;
+                cells[i].pos[7].y = 3;
+            }
             
             move(0, 8);
         }

@@ -8,7 +8,7 @@ Game::Game() {
     for (int i = 0; i < 7; i++) {
         blocks[i] = i + 2;
     }
-    currentBlock = getRandomBlock();
+    currentBlock = TBloc();
     nextBlock = getRandomBlock();
 }
 
@@ -75,12 +75,12 @@ void Game::handleInput(WINDOW * gamewin) {
     case KEY_RIGHT:
         MoveBlockRight();
         break;
-    case KEY_DOWN:
-        MoveBlockDown();
-        break;
-    // case KEY_UP:
-        
+    // case KEY_DOWN:
+    //     MoveBlockDown();
     //     break;
+    case KEY_UP:
+        rotateBlock();   
+        break;
     
     default:
         break;
@@ -89,22 +89,23 @@ void Game::handleInput(WINDOW * gamewin) {
 
 void Game::MoveBlockLeft() {
     currentBlock.move(0, -2);
-    if (isBlockOutside()) {
+    if (isBlockOutside() || blockFits() ==  false) {
         currentBlock.move(0, 2);
     }
 }
 
 void Game::MoveBlockRight() {
     currentBlock.move(0, 2);
-    if (isBlockOutside()) {
+    if (isBlockOutside() || blockFits() ==  false) {
         currentBlock.move(0, -2);
     }
 }
 
 void Game::MoveBlockDown() {
     currentBlock.move(1, 0);
-    if (isBlockOutside()) {
+    if (isBlockOutside() || blockFits() ==  false) {
         currentBlock.move(-1, 0);
+        lockBlock();
     }
 }
 
@@ -117,4 +118,31 @@ bool Game::isBlockOutside() {
         }
     }
     return false;
+}
+
+void Game::rotateBlock() {
+    currentBlock.rotate();
+    if (isBlockOutside()) {
+        currentBlock.undoRotation();
+    } 
+}
+
+void Game::lockBlock() {
+    position tiles = currentBlock.getPos();
+    for (int i = 0; i < 8; i++) {   // 8 è il numero di celle di un blocco
+        grid.grid[tiles.pos[i].x][tiles.pos[i].y] = currentBlock.id;
+    }
+    currentBlock = nextBlock;
+    nextBlock = getRandomBlock();
+    grid.clearFullRows();
+}
+
+bool Game::blockFits() {
+    position tiles = currentBlock.getPos();
+    for (int i = 0; i < 8; i++) {
+        if (grid.isCellEmpty(tiles.pos[i].x, tiles.pos[i].y)) {
+            return false;
+        }
+    }
+    return true;
 }
