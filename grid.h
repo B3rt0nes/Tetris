@@ -1,4 +1,5 @@
 #pragma once
+#include <ncurses.h>
 
 class Grid {
     private:
@@ -10,4 +11,5 @@ class Grid {
         Grid();
         void initGrid();
         void printGrid(WINDOW * win);
+        bool isCellOutside(int row, int column);
 };

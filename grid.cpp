@@ -1,4 +1,3 @@
-#include <ncurses.h>
 #include "grid.h"
     
 
@@ -68,4 +67,11 @@ void Grid::printGrid(WINDOW * win){
         }
     }
     wrefresh(win);
+}
+
+bool Grid::isCellOutside(int row, int column) {
+    if (row >= 0 && row < numRow-1 && column >= 0 && column < numCol) {
+        return false;
+    }
+    return true;
 }

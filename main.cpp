@@ -1,9 +1,8 @@
 #include <iostream>
 #include <ncurses.h>
 #include <array>
-// #include "game.h"
-#include "grid.h"
-// #include "Blocks.cpp"
+
+#include "game.h"
 
 
 using namespace std;
@@ -23,24 +22,24 @@ int main (int argc, char ** argv) {
 
     start_color(); // inizializza i colori
     
-    // init_pair(1, COLOR_BLACK,   COLOR_BLACK);       // 1 -> Background
-    // init_pair(2, COLOR_CYAN,    COLOR_CYAN);        // 2 -> I
-    // init_pair(3, COLOR_RED,   COLOR_RED);           // 3 -> Z
-    // init_pair(4, COLOR_GREEN,   COLOR_GREEN);       // 4 -> S
-    // init_pair(5, COLOR_BLUE,    COLOR_BLUE);        // 5 -> J
-    // init_pair(6, COLOR_MAGENTA, COLOR_MAGENTA);     // 6 -> T
-    // init_pair(7, COLOR_YELLOW,  COLOR_YELLOW);      // 7 -> O
-    // init_pair(8, COLOR_WHITE,   COLOR_WHITE);       // 8 -> L
+    init_pair(1, COLOR_BLACK,   COLOR_BLACK);       // 1 -> Background
+    init_pair(2, COLOR_CYAN,    COLOR_CYAN);        // 2 -> I
+    init_pair(3, COLOR_RED,   COLOR_RED);           // 3 -> Z
+    init_pair(4, COLOR_GREEN,   COLOR_GREEN);       // 4 -> S
+    init_pair(5, COLOR_BLUE,    COLOR_BLUE);        // 5 -> J
+    init_pair(6, COLOR_MAGENTA, COLOR_MAGENTA);     // 6 -> T
+    init_pair(7, COLOR_YELLOW,  COLOR_YELLOW);      // 7 -> O
+    init_pair(8, COLOR_WHITE,   COLOR_WHITE);       // 8 -> L
     
 
-    init_pair(1, COLOR_WHITE, COLOR_BLACK);         // 1 -> Background
-    init_pair(2, COLOR_WHITE, COLOR_CYAN);          // 2 -> I
-    init_pair(3, COLOR_WHITE, COLOR_RED);           // 3 -> Z
-    init_pair(4, COLOR_WHITE, COLOR_GREEN);         // 4 -> S
-    init_pair(5, COLOR_WHITE, COLOR_BLUE);          // 5 -> J
-    init_pair(6, COLOR_WHITE, COLOR_MAGENTA);       // 6 -> T
-    init_pair(7, COLOR_WHITE, COLOR_YELLOW);        // 7 -> O
-    init_pair(8, COLOR_WHITE, COLOR_WHITE);         // 8 -> L
+    // init_pair(1, COLOR_WHITE, COLOR_BLACK);         // 1 -> Background
+    // init_pair(2, COLOR_WHITE, COLOR_CYAN);          // 2 -> I
+    // init_pair(3, COLOR_WHITE, COLOR_RED);           // 3 -> Z
+    // init_pair(4, COLOR_WHITE, COLOR_GREEN);         // 4 -> S
+    // init_pair(5, COLOR_WHITE, COLOR_BLUE);          // 5 -> J
+    // init_pair(6, COLOR_WHITE, COLOR_MAGENTA);       // 6 -> T
+    // init_pair(7, COLOR_WHITE, COLOR_YELLOW);        // 7 -> O
+    // init_pair(8, COLOR_WHITE, COLOR_WHITE);         // 8 -> L
 
 
     int yMax, xMax; // to store the size of the window
@@ -161,9 +160,7 @@ void start() {
     nodelay(stdscr, TRUE);
 
 // OGGETTI DALLE CLASSI
-    Grid grid = Grid();
-    // IBloc block = IBloc();
-    // block.Move(4, 3);
+    Game game = Game();
 
     /*LOOP DI GIOCO*/
     bool loop = true;
@@ -185,14 +182,16 @@ void start() {
         // 1. EVENT HANDLING
         // 2. UPDATING POSITIONS
         // 3. DRWING OBJECTS
-        grid.printGrid(gamewin);
+        game.draw(gamewin);
         // block.Draw(gamewin, 0);
-
 
 
         wrefresh(gamewin);
         wrefresh(infowin);
         wrefresh(classwin);
+        
+        game.handleInput(gamewin);
+
         cont++;
     }
     
