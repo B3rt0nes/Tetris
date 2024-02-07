@@ -6,16 +6,9 @@
 
 #include "game.hpp"
 
-
 using namespace std;
 
-// const int NUM_RIGHE = 11;
-// const int NUM_COLONNE = 17;
-
 void start();
-// void getName();
-// void leggiFile(char matrice[NUM_RIGHE][NUM_COLONNE], const std::string& nomeFile);
-// void stampaMatrice(WINDOW* win, char matrice[NUM_RIGHE][NUM_COLONNE]);
 
 const int mH = 15;
 const int mW = 20;
@@ -144,29 +137,6 @@ int main (int argc, char ** argv) {
 
 void start() {
 // TUTTE LE FUNZIONI PER LE FINESTRE...
-    // getName();
-
-    // ifstream inputFile;
-    // inputFile.open("classifica.txt");
-
-    // ifstream inputFile("classifica.txt");
-
-    // char classifica[NUM_RIGHE][NUM_COLONNE];
-    // leggiFile(classifica, "classifica.txt");
-    // char classifica[dimensione-2];
-
-    // /* lettura dati */
-    // for (int i = 0; !inputFile.eof(); i++) {
-    //     // for (int j = 0; j < 10; j++) {
-    //         // inputFile.get(classifica[j][i]);
-    //         inputFile.get(classifica[i]);
-    //         // if (classifica[j][i] == '\n') {
-    //         //     j = 10;
-    //         // }
-    // //    }
-    // }
-    // inputFile.close();
-
     int yMax, xMax;
     getmaxyx(stdscr, yMax, xMax);
 
@@ -186,13 +156,12 @@ void start() {
     box(next, 0, 0);
     nodelay(stdscr, TRUE);
     /*FINESTRA CLASSIFICA*/
-    WINDOW * classwin = newwin(13, dimensione, (yMax-dimensione+18)/2, (xMax/2)-dimensione+1);
-    box(classwin, 0, 0);
-    nodelay(stdscr, TRUE);
+    
 
 
 // OGGETTI DALLE CLASSI
     Game game = Game();
+    game.classifica.getName();
 
     /*LOOP DI GIOCO*/
     bool loop = game.isGameOver();
@@ -202,25 +171,17 @@ void start() {
     while (!loop){
         box(infowin, 0, 0);
         wborder(infowin, '|', ' ', '-', '-', '+', '-', '+', '-'); // set the border
-        mvwprintw(infowin, 1, 1, "Nome: \t\t%s", name);
+        mvwprintw(infowin, 1, 1, "Nome:");
+        for (int i = 0; i < 3; i++) {
+            mvwprintw(infowin, 1, 16+i, "%c", game.classifica.giocatore.nome[i]);
+        }
+        
+        
+        // mvwprintw(infowin, 1, 1, "Nome: \t\t%s", game.classifica.giocatore.nome);
         mvwprintw(infowin, 2, 1, "Punteggio:\t%d", game.grid.score);
         mvwprintw(infowin, 3, 1, "Linee:\t\t%d", game.grid.lines);
         
-        box(classwin, 0, 0);
-        wborder(classwin, '|', ' ', ' ', '-', '|', ' ', '+', '-'); // set the border
-        mvwprintw(classwin, 0, 1, "Classifica:");
-        // for (int i = 0; i < 10; i++) {
-        //     mvwprintw(classwin, i+1, 1, "%c", classifica[i]);
-        // }
-        // mvwprintw(classwin, 1, 1, "%s", line.c_str());
-        // for (int r = 1; r <= 11; r++) {
-        //     for (int c = 0; c < dimensione-2; c++) {
-        //         // mvwprintw(classwin, 1, c+1, "%c", classifica[c]);
-        //         mvwprintw(classwin, r+1, c+1, "%c", classifica[r][c]);
-        //     }
-        // }
-
-        // stampaMatrice(classwin, classifica);
+        game.classifica.printClassifica();
 
         box(next, 0, 0);
         wborder(next, '|', ' ', ' ', '-', '|', ' ', '+', '-'); // set the border
@@ -235,8 +196,8 @@ void start() {
         
 
         wrefresh(gamewin);
-        wrefresh(infowin);
-        wrefresh(classwin);
+        wrefresh(infowin);  
+        // game.classifica.refreshClassifica();
         wrefresh(next);
         
         timeout(0); // Setta il timer a 0
@@ -264,52 +225,3 @@ void start() {
 
     
 }
-
-// void getName() {
-//     int yMax, xMax; // to store the size of the window
-//     getmaxyx(stdscr, yMax, xMax); // get screen size
-//     WINDOW * nameWin = newwin(mH, mW, (yMax-mH)/2, (xMax-mW)/2);
-//     box(nameWin, 0, 0);
-//     refresh();
-//     wrefresh(nameWin);
-//     nodelay(nameWin, FALSE);
-//     mvwprintw(nameWin, 1, 1, "ENTER NAME:");
-//     wrefresh(nameWin);
-//     echo(); // enable echoing of characters
-//     mvwgetstr(nameWin, 2, 1, name); // get the name from the user
-//     noecho(); // disable echoing
-//     wrefresh(nameWin);  // refresh the menuwin
-//     nodelay(stdscr, TRUE); // to not wait for input
-// }
-
-// void leggiFile(char matrice[NUM_RIGHE][NUM_COLONNE], const std::string& nomeFile) {
-//     ifstream file(nomeFile);
-
-//     for (int riga = 0; riga < NUM_RIGHE; ++riga) {
-//         for (int colonna = 0; colonna < NUM_COLONNE; ++colonna) {
-//             char carattere;
-//             file.get(carattere); // Leggi un carattere alla volta dal file
-//             if (carattere == '\n' || carattere == EOF) {
-//                 for (int i = colonna; i < NUM_COLONNE; ++i) {
-//                     matrice[riga][i] = ' ';
-//                 }
-//                 break;
-//             } 
-//             matrice[riga][colonna] = carattere; // Memorizza il carattere nella matrice
-//         }
-//     }
-
-//     file.close();
-// }
-
-// void stampaMatrice(WINDOW* win, char matrice[NUM_RIGHE][NUM_COLONNE]) {
-//     for (int riga = 0; riga < NUM_RIGHE-1 ; ++riga) {
-//         int pos = riga+1;
-//         mvwprintw(win, riga+1, 1, "%d", pos);
-//         mvwprintw(win, riga+1, 2, "%c", "°");
-//         mvwprintw(win, riga+1, 3, "%c", " ");
-//         for (int colonna = 0; colonna < NUM_COLONNE; ++colonna) {
-//             mvwprintw(win, riga+1, colonna+4, "%c", matrice[riga][colonna]);
-//         }
-//     }
-// }

@@ -93,7 +93,7 @@ int Grid::clearFullRows() {
             deleteRow(row);
             completed++; 
         } else if (completed > 0) {
-            if (completed > 4) {
+            if (completed >= 4) {
                 score += 10;
             }
             moveRowsDown(row, completed);

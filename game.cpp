@@ -5,6 +5,7 @@
 
 Game::Game() {
     grid = Grid();
+    classifica = Classifica();
     getAllBlocks(blocks, 7);
     currentBlock = getRandomBlock();
     nextBlock = getRandomBlock();
@@ -144,6 +145,7 @@ void Game::lockBlock() {
     currentBlock = nextBlock;
     if (blockFits() == false) {
         gameOver = true;
+        classifica.addScore(grid.score);
         return;
     }
     nextBlock = getRandomBlock();

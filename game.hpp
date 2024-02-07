@@ -1,5 +1,6 @@
 #pragma once
 #include "grid.hpp"
+#include "classifica.hpp"
 #include "Blocks.cpp"
 
 class Game {
@@ -7,6 +8,7 @@ class Game {
         Game();
         Block getRandomBlock();
         Grid grid;
+        Classifica classifica;
         void getAllBlocks(int[], int);
         void draw(WINDOW * win);
         void handleInput(WINDOW * win);

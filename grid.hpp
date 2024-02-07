@@ -2,13 +2,6 @@
 #include <ncurses.h>
 
 class Grid {
-    private:
-        bool isRowFull(int row);
-        void deleteRow(int row);
-        void moveRowsDown(int row, int numRow);
-
-        int numRow;
-        int numCol;
     public:
         Grid();
         void initGrid();
@@ -20,4 +13,12 @@ class Grid {
         char grid[22][22];
         int score;
         int lines;
+        
+    private:
+        bool isRowFull(int row);
+        void deleteRow(int row);
+        void moveRowsDown(int row, int numRow);
+
+        int numRow;
+        int numCol;
 };
