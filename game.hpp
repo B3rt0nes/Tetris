@@ -1,5 +1,5 @@
 #pragma once
-#include "grid.h"
+#include "grid.hpp"
 #include "Blocks.cpp"
 
 class Game {
@@ -13,11 +13,15 @@ class Game {
         void MoveBlockLeft();
         void MoveBlockRight();
         void MoveBlockDown();
+        void Reset();
+        bool isGameOver();
+
+        bool gameOver;
+        Block nextBlock;
 
     private:
         int blocks[7];
         Block currentBlock;
-        Block nextBlock;
         bool isBlockOutside();
         void rotateBlock();
         void lockBlock();

@@ -18,4 +18,6 @@ class Grid {
         int clearFullRows();
 
         char grid[22][22];
+        int score;
+        int lines;
 };

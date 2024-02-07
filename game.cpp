@@ -1,27 +1,26 @@
-#include "game.h"
+#include "game.hpp"
 #include <ncurses.h>
 #include <cstdlib>
 #include <ctime>
 
 Game::Game() {
     grid = Grid();
-    for (int i = 0; i < 7; i++) {
-        blocks[i] = i + 2;
-    }
-    currentBlock = TBloc();
+    getAllBlocks(blocks, 7);
+    currentBlock = getRandomBlock();
     nextBlock = getRandomBlock();
+    gameOver = false;
 }
 
 Block Game::getRandomBlock() {
     
-    if (blocks[0] == 0 && blocks[1] == 0 && 
-        blocks[2] == 0 && blocks[3] == 0 && 
-        blocks[4] == 0 && blocks[5] == 0 && 
-        blocks[6] == 0) {
+    if (blocks[0] == -1 && blocks[1] == -1 && blocks[2] == -1 && blocks[3] == -1 && blocks[4] == -1 && blocks[5] == -1 && blocks[6] == -1) {
         getAllBlocks(blocks, 7);
     }
     srand(time(0));
-    int randomIndex = (rand() % 7); // 0 - 6
+    int randomIndex;
+    do {
+        randomIndex = (rand() % 7); // 0 - 6
+    } while (blocks[randomIndex] == -1);
     Block block;
     
     
@@ -50,14 +49,14 @@ Block Game::getRandomBlock() {
         default:
             break;
     }
-    blocks[randomIndex] = 0;
+    blocks[randomIndex] = -1;
 
     return block;
 }
 
 void Game::getAllBlocks(int blocks[], int size) {
     for (int i = 0; i < size; i++) {
-        blocks[i] = i + 2;
+        blocks[i] = i + 2;  // 2 - 8
     }
 }
 
@@ -75,9 +74,9 @@ void Game::handleInput(WINDOW * gamewin) {
     case KEY_RIGHT:
         MoveBlockRight();
         break;
-    // case KEY_DOWN:
-    //     MoveBlockDown();
-    //     break;
+    case KEY_DOWN:
+        MoveBlockDown();
+        break;
     case KEY_UP:
         rotateBlock();   
         break;
@@ -88,25 +87,35 @@ void Game::handleInput(WINDOW * gamewin) {
 }
 
 void Game::MoveBlockLeft() {
-    currentBlock.move(0, -2);
-    if (isBlockOutside() || blockFits() ==  false) {
-        currentBlock.move(0, 2);
-    }
+    if (!gameOver){
+        currentBlock.move(0, -2);
+        if (isBlockOutside() || blockFits() ==  false) {
+            currentBlock.move(0, 2);
+        }
+    }   
 }
 
 void Game::MoveBlockRight() {
-    currentBlock.move(0, 2);
-    if (isBlockOutside() || blockFits() ==  false) {
-        currentBlock.move(0, -2);
+    if (!gameOver){
+        currentBlock.move(0, 2);
+        if (isBlockOutside() || blockFits() ==  false) {
+            currentBlock.move(0, -2);
+        }
     }
 }
 
 void Game::MoveBlockDown() {
-    currentBlock.move(1, 0);
-    if (isBlockOutside() || blockFits() ==  false) {
-        currentBlock.move(-1, 0);
-        lockBlock();
+    if (!gameOver){
+        currentBlock.move(1, 0);
+        if (isBlockOutside() || blockFits() ==  false) {
+            currentBlock.move(-1, 0);
+            lockBlock();
+        }
     }
+}
+
+bool Game::isGameOver() {
+    return gameOver;
 }
 
 bool Game::isBlockOutside() {
@@ -133,6 +142,10 @@ void Game::lockBlock() {
         grid.grid[tiles.pos[i].x][tiles.pos[i].y] = currentBlock.id;
     }
     currentBlock = nextBlock;
+    if (blockFits() == false) {
+        gameOver = true;
+        return;
+    }
     nextBlock = getRandomBlock();
     grid.clearFullRows();
 }
@@ -146,3 +159,11 @@ bool Game::blockFits() {
     }
     return true;
 }
+
+void Game::Reset() {
+    grid.initGrid();
+    getAllBlocks(blocks, 7);
+    currentBlock = getRandomBlock();
+    nextBlock = getRandomBlock();
+}
+

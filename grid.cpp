@@ -1,10 +1,12 @@
-#include "grid.h"
+#include "grid.hpp"
 
 
 Grid::Grid()
 {
     numCol = 20;
     numRow = 20;
+    score = 0;
+    lines = 0;
     initGrid();
 }
 
@@ -18,10 +20,10 @@ void Grid::initGrid(){
 
 void Grid::printGrid(WINDOW * win){
     box(win, 0, 0);
-    // wborder(win, '|', '|', '-', '-', '+', '+', '+', '+'); // set the border
+    wborder(win, '|', '|', '-', '-', '+', '+', '+', '+'); // set the border
     
-    for(int row = 0; row <= numRow; row++){      // 0 e 34 sono i bordi
-        for(int col = 0; col <= numCol; col++){  // 0 e 34 sono i bordi
+    for(int row = 0; row <= numRow; row++){
+        for(int col = 0; col <= numCol; col++){
             if (grid[row][col] == '1') {
                 wattron(win, COLOR_PAIR(1));
                 mvwprintw(win, row+1, col+1, "%c", grid[row][col]);
@@ -91,6 +93,9 @@ int Grid::clearFullRows() {
             deleteRow(row);
             completed++; 
         } else if (completed > 0) {
+            if (completed > 4) {
+                score += 10;
+            }
             moveRowsDown(row, completed);
         }
     }
@@ -103,6 +108,8 @@ bool Grid::isRowFull(int row) {
             return false;
         }
     }
+    score += 10;
+    lines++;
     return true;
 }
 
