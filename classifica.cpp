@@ -63,6 +63,7 @@ void Classifica::getName() {
         mvwprintw(nameWin, 2, i+3, " ");
         wrefresh(nameWin);
     }
+    addPlayer();
     noecho(); 
     wrefresh(nameWin);
     
@@ -90,8 +91,7 @@ void Classifica::addScore(int score) {
     giocatore.punteggio = score;
     addPlayer();
     ordinaClassifica();
-    createArray();
-    saveClassifica();    
+    createArray();  
 }
 
 // Funzione per aggiungere un giocatore alla classifica
@@ -104,8 +104,8 @@ void Classifica::addPlayer() {
 
 // Funzione per aggiornare la classifica
 void Classifica::ordinaClassifica() {
-    for (int i = 0; i < NUM_RIGHE; i++) {   // Bubble sort
-        for (int j = i+1; j < NUM_RIGHE; j++) {
+    for (int i = 0; i < NUM_RIGHE+1; i++) {   // Bubble sort
+        for (int j = i+1; j < NUM_RIGHE+1; j++) {
             if (podio[i].punteggio < podio[j].punteggio) {
                 player temp = podio[i];
                 podio[i] = podio[j];
@@ -117,20 +117,19 @@ void Classifica::ordinaClassifica() {
 
 // Funnzione per creare array di giocatore+score
 void Classifica::createArray() {
+    ofstream outputFile;
+    outputFile.open("classifica.txt");
+
     for (int i = 0; i < NUM_RIGHE; i++) {
         char temp[50]; // Temporary buffer for each player
         sprintf(temp, "%s %d\n", podio[i].nome, podio[i].punteggio);
-        strcat(buffer, temp); // Append the player to the buffer
+        outputFile << temp;
     }
-}
-// Funzione per salvare la classifica su file
-void Classifica::saveClassifica() {
-    ofstream outputFile;
-    outputFile.open("classifica.txt");
-    outputFile << buffer << endl;
-
     outputFile.close();
 }
+
+// Funzione per salvare la classifica su file
+
 // Funzione per caricare la classifica da file
 
 // Funzione per ordinare la classifica

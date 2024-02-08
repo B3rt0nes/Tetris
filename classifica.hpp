@@ -29,7 +29,7 @@ class Classifica {
 
         void createArray();
 
-        void saveClassifica();
+        // void saveClassifica();
 
     protected:
         int NUM_RIGHE;

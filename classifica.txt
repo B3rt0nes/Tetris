@@ -3,8 +3,8 @@ Fra 5820
 Eff 1000
 Ale 589
 Fil 282
-Agn 220
 And 220
+Agn 220
 Bea 89
 Mrt 52
 Ann 2
