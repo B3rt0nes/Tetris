@@ -3,22 +3,24 @@
 #include <ncurses.h>
 #include <array>
 #include <ctime>
+#include <string>
 #include <cstring>
 
 #include "game.hpp"
 
 using namespace std;
 
-void start();
-void newGame();
+void game();
+void menu();
 void checkClassifica();
+void classifica();
 void removeLastLine();
 
 const int mH = 15;
 const int mW = 20;
 const int dimensione = 20+2;
-string info[2] = {  "Punteggio:\t", "Linee:\t"};
-char name[50];
+char opt[2][50] = { "Gioca", "Classifica" };
+int yMax, xMax;
 
 int main (int argc, char ** argv) {
     initscr();
@@ -36,19 +38,7 @@ int main (int argc, char ** argv) {
     init_pair(6, COLOR_MAGENTA, COLOR_MAGENTA);     // 6 -> T
     init_pair(7, COLOR_YELLOW,  COLOR_YELLOW);      // 7 -> O
     init_pair(8, COLOR_WHITE,   COLOR_WHITE);       // 8 -> L
-    
 
-    // init_pair(1, COLOR_WHITE, COLOR_BLACK);         // 1 -> Background
-    // init_pair(2, COLOR_WHITE, COLOR_CYAN);          // 2 -> I
-    // init_pair(3, COLOR_WHITE, COLOR_RED);           // 3 -> Z
-    // init_pair(4, COLOR_WHITE, COLOR_GREEN);         // 4 -> S
-    // init_pair(5, COLOR_WHITE, COLOR_BLUE);          // 5 -> J
-    // init_pair(6, COLOR_WHITE, COLOR_MAGENTA);       // 6 -> T
-    // init_pair(7, COLOR_WHITE, COLOR_YELLOW);        // 7 -> O
-    // init_pair(8, COLOR_WHITE, COLOR_WHITE);         // 8 -> L
-
-
-    int yMax, xMax; // to store the size of the window
     getmaxyx(stdscr, yMax, xMax); // get screen size
 
     if (yMax >= dimensione +  12) {
@@ -76,25 +66,27 @@ int main (int argc, char ** argv) {
         wrefresh(titlewin);
     }
 
-    WINDOW * menuwin = newwin(mH, mW, (yMax-mH)/2, (xMax-mW)/2);
+    menu();
+
+    return 0;
+}
+
+void menu() {
+    WINDOW * menuwin = newwin(dimensione, dimensione*2, (yMax-dimensione)/2, (xMax/2)-dimensione+1);
     wborder(menuwin, '|', '|', '-', '-', '+', '+', '+', '+');
     refresh();
     wrefresh(menuwin);
     keypad(menuwin, true);
     nodelay(stdscr, TRUE);
 
-    int menuyMax, menuxMax; 
-    getmaxyx(menuwin, menuyMax, menuxMax);
-
-    string scelte[3] = {"start", "classifica", "info"};
     int choice; 
     int highlight = 0;
 
     while(1) { // loop until a choice is made
-        for(int i = 0; i < 3; i++) { // print all choices
-            if(i == highlight) // highlight the current choice
-                wattron(menuwin, A_REVERSE); 
-            mvwprintw(menuwin, i+2, 3, scelte[i].c_str());
+        for (int i = 0; i < 2; i++) {
+            if (i == highlight)
+                wattron(menuwin, A_REVERSE); // Evidenzia la scelta corrente
+            mvwprintw(menuwin, i+2, 3, opt[i]);
             wattroff(menuwin, A_REVERSE);
         }
         choice = wgetch(menuwin); // get user input
@@ -120,13 +112,11 @@ int main (int argc, char ** argv) {
     switch(highlight) {
         case 0:
             delwin(menuwin);
-            start();
+            game();
             break;
         case 1:
-            // Classifica
-            break;
-        case 2:
-            // info
+            delwin(menuwin);
+            classifica();
             break;
         default:
             break;
@@ -135,11 +125,9 @@ int main (int argc, char ** argv) {
     getch();
     endwin();
     delwin(menuwin); // delete the window to free memory
-
-    return 0;
 }
 
-void start() {
+void game() {
 // TUTTE LE FUNZIONI PER LE FINESTRE...
 
     // la classifica deve avere 11 righe, la 11esima riga è quella del giocatore
@@ -147,8 +135,6 @@ void start() {
     // controlli per classifica.txt
     checkClassifica();
     removeLastLine();
-    int yMax, xMax;
-    getmaxyx(stdscr, yMax, xMax);
 
     /*FINESTRA GIOCO*/
     WINDOW * gamewin = newwin(dimensione, dimensione, (yMax-dimensione)/2, (xMax)/2+1);
@@ -179,6 +165,7 @@ void start() {
     int currentNext = game.nextBlock.id;
     double lastUpdateTime = 0;
     while (!loop){
+        loop = game.isGameOver();
         box(infowin, 0, 0);
         wborder(infowin, '|', ' ', '-', '-', '+', '-', '+', '-'); // set the border
         mvwprintw(infowin, 1, 1, "Nome:");
@@ -186,8 +173,6 @@ void start() {
             mvwprintw(infowin, 1, 16+i, "%c", game.classifica.giocatore.nome[i]);
         }
         
-        
-        // mvwprintw(infowin, 1, 1, "Nome: \t\t%s", game.classifica.giocatore.nome);
         mvwprintw(infowin, 2, 1, "Punteggio:\t%d", game.classifica.giocatore.punteggio);
         mvwprintw(infowin, 3, 1, "Linee:\t\t%d", game.grid.lines);
         
@@ -200,11 +185,9 @@ void start() {
             currentNext = game.nextBlock.id;
             wclear(next);
         }
-        game.nextBlock.Draw(next, 0);
-        game.classifica.giocatore.punteggio = game.grid.score;
+        game.nextBlock.Draw(next, 0);   // disegna il prossimo blocco
 // ==================================================
-        loop = game.isGameOver();
-        
+                
 
         wrefresh(gamewin);
         wrefresh(infowin);  
@@ -222,13 +205,15 @@ void start() {
         }
 
         if (game.isGameOver() == true) {
+            game.classifica.endGame(game.grid.score);
+
             game.grid.initGrid();
             game.grid.printGrid(gamewin);
 
             mvwprintw(gamewin, 10, 6, "GAME OVER");
             wrefresh(gamewin);
             game.gameOver = false;
-            newGame();
+            menu();
         }
         napms(nap);
     }
@@ -236,26 +221,84 @@ void start() {
     
 }
 
-void newGame() {
-    int yMax, xMax;
-    getmaxyx(stdscr, yMax, xMax);
-    WINDOW * newWin = newwin(mH, mW, (yMax-mH)/2, (xMax-mW)/2);
-    box(newWin, 0, 0);
+void classifica() {
+    WINDOW * classwin = newwin(dimensione, dimensione*2, (yMax-dimensione)/2, (xMax/2)-dimensione+1);
+    wborder(classwin, '|', '|', '-', '-', '+', '+', '+', '+');
+    refresh();
+    wrefresh(classwin);
+    keypad(classwin, true); 
+    nodelay(stdscr, FALSE);  
 
-    mvwprintw(newWin, 2, 3, "Nuova partita?");
-    mvwprintw(newWin, 3, 4, "any char T.C");
-    mvwprintw(newWin, 5, 2, "ctrl+c to close");
+    std::ifstream inFile("classifica.txt");
 
-    wrefresh(newWin);
-    nodelay(stdscr, FALSE); // to wait for input
-    char c = getch();
-    if (c != '\0') {
-        delwin(newWin);
-        start();
-    } else {
-        removeLastLine();
-        endwin();
+    // Leggi e stampa ogni carattere del file
+    char carattere;
+    int riga = 5;
+    int colonna = 1;
+    while (inFile.get(carattere)) {
+        if (carattere == '\n') {
+            riga++;
+            colonna = 1;
+        } else {
+            if (colonna == 1) {
+                mvwprintw(classwin, riga, colonna+2, "#%d", riga-4);
+            }
+            // mvwaddch(classwin, riga, colonna, riga);
+            // mvwaddch(classwin, riga, colonna+1, '°');
+            mvwaddch(classwin, riga, colonna+6, carattere);
+            colonna++;
+        }
     }
+
+    // Chiudi il file
+    inFile.close();
+
+    
+    int choice; 
+    int highlight = 0;
+    while(1) { // loop until a choice is made
+        for (int i = 0; i < 2; i++) {
+            if (i == highlight)
+                wattron(classwin, A_REVERSE); // Evidenzia la scelta corrente
+            mvwprintw(classwin, i+2, 3, opt[i]);
+            wattroff(classwin, A_REVERSE);
+        }
+        choice = wgetch(classwin); // get user input
+
+        switch(choice) {
+            case KEY_UP:
+                highlight--;
+                if(highlight < 0)
+                    highlight = 0;
+                break;
+            case KEY_DOWN:
+                highlight++;
+                if(highlight > 3-1)
+                    highlight = 3-1;
+                break;
+            default:
+                break;
+        }
+        if(choice == 10) // if the user presses enter
+            break;
+    }
+    // handle the choice
+    switch(highlight) {
+        case 0:
+            delwin(classwin);
+            game();
+            break;
+        case 1:
+            delwin(classwin);
+            classifica();
+            break;
+        default:
+            break;
+    }
+
+    getch();
+    endwin();
+    delwin(classwin); // delete the window to free memory
 }
 
 void removeLastLine() {
@@ -314,9 +357,9 @@ void checkClassifica() {
 
     if (count < 11) {
         ofstream outFile;
-        outFile.open("classifica.txt", ios_base::app);
+        outFile.open("classifica.txt", ios_base::app);  
         for (int i = count; i < 11; i++) {
-            outFile << "AAA 0\n";
+            outFile << "AAA 0\n";   
         }
         outFile.close();
     }

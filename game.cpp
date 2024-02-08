@@ -141,15 +141,16 @@ void Game::lockBlock() {
     position tiles = currentBlock.getPos();
     for (int i = 0; i < 8; i++) {   // 8 è il numero di celle di un blocco
         grid.grid[tiles.pos[i].x][tiles.pos[i].y] = currentBlock.id;
-    }
+    }    
     currentBlock = nextBlock;
-    if (blockFits() == false) {
+    if (blockFits() == false) { // se il blocco non può essere inserito
         classifica.addScore(grid.score);
         gameOver = true;
         return;
     }
     nextBlock = getRandomBlock();
     grid.clearFullRows();
+    classifica.giocatore.punteggio = grid.score;
 }
 
 bool Game::blockFits() {

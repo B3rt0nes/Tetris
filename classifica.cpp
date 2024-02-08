@@ -3,6 +3,7 @@
 #include <fstream>
 #include <cstdlib>
 #include <ncurses.h>
+#include <string>
 #include <cstring>
 
 using namespace std;
@@ -10,7 +11,7 @@ const int MAX_RIGHE = 11;
 
 // Costruttore
 Classifica::Classifica() {
-    NUM_RIGHE = 10; // Assicurati che NUM_RIGHE sia coerente con la dimensione di podio
+    NUM_RIGHE = 10; // Assicurati che NUM_RIGHE sia coerente con la 22 di podio
     ifstream file("classifica.txt");
 
     int riga = 0;
@@ -24,7 +25,7 @@ Classifica::Classifica() {
     classWin = newwin(13, 22, (yMax - 22 + 18) / 2, (xMax / 2) - 22 + 1);
 
     int i = 0;
-    while (i < NUM_COLONNE) {
+    while (i < 3) {
         giocatore.nome[i] = 'Z'; // Inizializzazione di giocatore.nome
         i++;
     }
@@ -32,11 +33,12 @@ Classifica::Classifica() {
 }
 
 void Classifica::getName() {
-    WINDOW *nameWin = newwin(15, 20, (yMax - 15) / 2, (xMax - 20) / 2);
+    WINDOW * nameWin = newwin(22, 22*2, (yMax-22)/2, (xMax/2)-22+1);
     box(nameWin, 0, 0);
-    mvwprintw(nameWin, 1, 1, "ENTER NAME:");
+    wborder(nameWin, '|', '|', '-', '-', '+', '+', '+', '+');
+    mvwprintw(nameWin, 2, (44-12)/2, "ENTER NAME:");
     echo();
-    mvwgetnstr(nameWin, 2, 1, giocatore.nome, 3); // Utilizza mvwgetnstr per leggere una stringa di lunghezza massima 3
+    mvwgetnstr(nameWin, 4, (44-4)/2, giocatore.nome, 3); // Utilizza mvwgetnstr per leggere una stringa di lunghezza massima 3
     addPlayer();
     createArray();
     noecho();
@@ -61,6 +63,7 @@ void Classifica::printClassifica() {
 
 void Classifica::addScore(int score) {
     giocatore.punteggio = score;
+    podio[NUM_RIGHE].punteggio = giocatore.punteggio;
     ordinaClassifica();
     createArray();
 }
@@ -74,33 +77,15 @@ void Classifica::addPlayer() {
 }
 
 // Funzione per ordinare la classifica
-// Funzione per ordinare la classifica
 void Classifica::ordinaClassifica() {
-    quickSort(podio, 0, NUM_RIGHE - 1);
-}
-
-// Funzione helper per il Quick Sort
-int Classifica::partition(player arr[], int low, int high) {
-    int pivot = arr[high].punteggio;
-    int i = (low - 1);
-
-    for (int j = low; j <= high - 1; j++) {
-        if (arr[j].punteggio > pivot) {
-            i++;
-            swap(arr[i], arr[j]);
+    for (int i = 0; i < NUM_RIGHE; i++) {
+        for (int j = 0; j < NUM_RIGHE - 1; j++) {
+            if (podio[j].punteggio < podio[j + 1].punteggio) {
+                player temp = podio[j];
+                podio[j] = podio[j + 1];
+                podio[j + 1] = temp;
+            }
         }
-    }
-    swap(arr[i + 1], arr[high]);
-    return (i + 1);
-}
-
-// Funzione Quick Sort
-void Classifica::quickSort(player arr[], int low, int high) {
-    if (low < high) {
-        int pi = partition(arr, low, high);
-
-        quickSort(arr, low, pi - 1);
-        quickSort(arr, pi + 1, high);
     }
 }
 
@@ -112,4 +97,43 @@ void Classifica::createArray() {
         outputFile << podio[i].nome << " " << podio[i].punteggio << endl;
     }
     outputFile.close();
+}
+
+void Classifica::endGame(int punteggio) {
+    scriviPunteggio(punteggio);
+    podio[10].punteggio = punteggio;
+    ordinaClassifica();
+    createArray();
+}
+
+void Classifica::scriviPunteggio(int punteggio) {
+    fstream file("classifica.txt", ios::in | ios::out);
+
+    // Vai alla fine del file
+    file.seekg(0, ios::end);
+
+    // Memorizza la posizione corrente del cursore
+    streampos pos = file.tellg();
+
+    // Leggi il contenuto del file all'indietro finché non trovi uno spazio
+    char ch;
+    do {
+        pos = pos - 1;
+        file.seekg(pos);
+        file.get(ch);
+    } while (ch != ' ' && pos > 0);
+
+    // Torna indietro di un carattere per posizionarti proprio prima dello spazio
+    if (pos > 0) {
+        file.seekp(pos + 1);
+    } else {
+        file.seekp(0);
+    }
+
+    // Scrivi il punteggio dopo lo spazio
+    file << punteggio;
+    file << endl;
+
+    // Chiudi il file
+    file.close();
 }

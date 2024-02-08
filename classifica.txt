@@ -1,11 +1,10 @@
 Alb 9999
 Fra 5820
 Eff 1000
+Alb 780
 Ale 589
+ADR 340
 Fil 282
-Agn 220
+ALB 240
 And 220
-Bea 89
-reo 23
-cux 0
-cle 0
+Agn 220

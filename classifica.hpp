@@ -24,20 +24,15 @@ class Classifica {
         void printClassifica();
         void addScore(int);
         void addPlayer();
-
         void ordinaClassifica();
-
         int partition(player arr[], int low, int high);
-
         void quickSort(player arr[], int low, int high);
-
         void createArray();
-
-        // void saveClassifica();
+        void endGame(int punteggio);
+        void scriviPunteggio(int punteggio);
 
     protected:
         int NUM_RIGHE;
-        int NUM_COLONNE;
         int yMax, xMax;
         WINDOW * classWin;
 };
