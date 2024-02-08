@@ -188,7 +188,7 @@ void start() {
         
         
         // mvwprintw(infowin, 1, 1, "Nome: \t\t%s", game.classifica.giocatore.nome);
-        mvwprintw(infowin, 2, 1, "Punteggio:\t%d", game.grid.score);
+        mvwprintw(infowin, 2, 1, "Punteggio:\t%d", game.classifica.giocatore.punteggio);
         mvwprintw(infowin, 3, 1, "Linee:\t\t%d", game.grid.lines);
         
         game.classifica.printClassifica();
@@ -283,9 +283,9 @@ void removeLastLine() {
 }
 
 void checkClassifica() {
-    std::ifstream inFile("classifica.txt");
+    ifstream inFile("classifica.txt");
     if (!inFile) {
-        std::cerr << "Unable to open file classifica.txt";
+        cerr << "Unable to open file classifica.txt";
         exit(1);
     }
 
@@ -305,16 +305,16 @@ void checkClassifica() {
     inFile.close();
 
     if (!lastCharIsNewline) {
-        std::ofstream outFile;
-        outFile.open("classifica.txt", std::ios_base::app);
+        ofstream outFile;
+        outFile.open("classifica.txt", ios_base::app);
         outFile << "\n";
         outFile.close();
         count++;
     }
 
     if (count < 11) {
-        std::ofstream outFile;
-        outFile.open("classifica.txt", std::ios_base::app);
+        ofstream outFile;
+        outFile.open("classifica.txt", ios_base::app);
         for (int i = count; i < 11; i++) {
             outFile << "AAA 0\n";
         }
