@@ -129,10 +129,6 @@ void menu() {
 
 void game() {
 // TUTTE LE FUNZIONI PER LE FINESTRE...
-
-    // la classifica deve avere 11 righe, la 11esima riga è quella del giocatore
-    // che viene aggiornata ogni volta che si avvia il gioco.
-    // controlli per classifica.txt
     checkClassifica();
     removeLastLine();
 
@@ -151,9 +147,6 @@ void game() {
     WINDOW * next = newwin(4, dimensione, (yMax-dimensione+10)/2, (xMax/2)-dimensione+1);
     box(next, 0, 0);
     nodelay(stdscr, TRUE);
-    /*FINESTRA CLASSIFICA*/
-    
-
 
 // OGGETTI DALLE CLASSI
     Game game = Game();
@@ -167,7 +160,7 @@ void game() {
     while (!loop){
         loop = game.isGameOver();
         box(infowin, 0, 0);
-        wborder(infowin, '|', ' ', '-', '-', '+', '-', '+', '-'); // set the border
+        wborder(infowin, '|', ' ', '-', '-', '+', '-', '+', '-');
         mvwprintw(infowin, 1, 1, "Nome:");
         for (int i = 0; i < 3; i++) {
             mvwprintw(infowin, 1, 16+i, "%c", game.classifica.giocatore.nome[i]);
@@ -179,15 +172,14 @@ void game() {
         game.classifica.printClassifica();
 
         box(next, 0, 0);
-        wborder(next, '|', ' ', ' ', '-', '|', ' ', '+', '-'); // set the border
+        wborder(next, '|', ' ', ' ', '-', '|', ' ', '+', '-');
         mvwprintw(next, 0, 1, "Prossimo blocco:");
         if (currentNext != game.nextBlock.id) {
             currentNext = game.nextBlock.id;
             wclear(next);
         }
-        game.nextBlock.Draw(next, 0);   // disegna il prossimo blocco
-// ==================================================
-                
+
+        game.nextBlock.Draw(next, 0);
 
         wrefresh(gamewin);
         wrefresh(infowin);  
@@ -231,7 +223,6 @@ void classifica() {
 
     std::ifstream inFile("classifica.txt");
 
-    // Leggi e stampa ogni carattere del file
     char carattere;
     int riga = 5;
     int colonna = 1;
@@ -243,8 +234,6 @@ void classifica() {
             if (colonna == 1) {
                 mvwprintw(classwin, riga, colonna+2, "#%d", riga-4);
             }
-            // mvwaddch(classwin, riga, colonna, riga);
-            // mvwaddch(classwin, riga, colonna+1, '°');
             mvwaddch(classwin, riga, colonna+6, carattere);
             colonna++;
         }
@@ -256,14 +245,14 @@ void classifica() {
     
     int choice; 
     int highlight = 0;
-    while(1) { // loop until a choice is made
+    while(1) {
         for (int i = 0; i < 2; i++) {
             if (i == highlight)
-                wattron(classwin, A_REVERSE); // Evidenzia la scelta corrente
+                wattron(classwin, A_REVERSE);
             mvwprintw(classwin, i+2, 3, opt[i]);
             wattroff(classwin, A_REVERSE);
         }
-        choice = wgetch(classwin); // get user input
+        choice = wgetch(classwin);
 
         switch(choice) {
             case KEY_UP:
@@ -279,7 +268,7 @@ void classifica() {
             default:
                 break;
         }
-        if(choice == 10) // if the user presses enter
+        if(choice == 10)
             break;
     }
     // handle the choice

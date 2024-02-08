@@ -8,12 +8,6 @@ struct player {
     int punteggio;
 };
 
-
-/**
- * @brief The Classifica class represents a leaderboard for the game.
- * 
- * It stores the top 10 players' scores in the 'podio' array.
- */
 class Classifica {
     public:
         Classifica();
