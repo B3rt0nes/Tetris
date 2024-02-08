@@ -13,16 +13,20 @@ Classifica::Classifica() {
     NUM_RIGHE = 10; // Assicurati che NUM_RIGHE sia coerente con la dimensione di podio
     ifstream file("classifica.txt");
 
-    for (int riga = 0; riga < NUM_RIGHE+1; riga++) {
+    int riga = 0;
+    while (riga < NUM_RIGHE+1) {
         file >> podio[riga].nome >> podio[riga].punteggio;
+        riga++;
     }
     file.close();
 
     getmaxyx(stdscr, yMax, xMax);
     classWin = newwin(13, 22, (yMax - 22 + 18) / 2, (xMax / 2) - 22 + 1);
 
-    for (int i = 0; i < NUM_COLONNE; i++) {
+    int i = 0;
+    while (i < NUM_COLONNE) {
         giocatore.nome[i] = 'Z'; // Inizializzazione di giocatore.nome
+        i++;
     }
     giocatore.punteggio = 0;
 }
@@ -57,7 +61,6 @@ void Classifica::printClassifica() {
 
 void Classifica::addScore(int score) {
     giocatore.punteggio = score;
-    addPlayer();
     ordinaClassifica();
     createArray();
 }
@@ -71,15 +74,33 @@ void Classifica::addPlayer() {
 }
 
 // Funzione per ordinare la classifica
+// Funzione per ordinare la classifica
 void Classifica::ordinaClassifica() {
-    for (int i = 0; i < NUM_RIGHE; i++) { // Bubble sort
-        for (int j = i + 1; j < NUM_RIGHE; j++) {
-            if (podio[i].punteggio < podio[j].punteggio) {
-                player temp = podio[i];
-                podio[i] = podio[j];
-                podio[j] = temp;
-            }
+    quickSort(podio, 0, NUM_RIGHE - 1);
+}
+
+// Funzione helper per il Quick Sort
+int Classifica::partition(player arr[], int low, int high) {
+    int pivot = arr[high].punteggio;
+    int i = (low - 1);
+
+    for (int j = low; j <= high - 1; j++) {
+        if (arr[j].punteggio > pivot) {
+            i++;
+            swap(arr[i], arr[j]);
         }
+    }
+    swap(arr[i + 1], arr[high]);
+    return (i + 1);
+}
+
+// Funzione Quick Sort
+void Classifica::quickSort(player arr[], int low, int high) {
+    if (low < high) {
+        int pi = partition(arr, low, high);
+
+        quickSort(arr, low, pi - 1);
+        quickSort(arr, pi + 1, high);
     }
 }
 

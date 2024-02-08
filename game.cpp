@@ -144,6 +144,7 @@ void Game::lockBlock() {
     }
     currentBlock = nextBlock;
     if (blockFits() == false) {
+        classifica.addScore(grid.score);
         gameOver = true;
         return;
     }

@@ -11,6 +11,7 @@ using namespace std;
 
 void start();
 void newGame();
+void checkClassifica();
 void removeLastLine();
 
 const int mH = 15;
@@ -140,7 +141,12 @@ int main (int argc, char ** argv) {
 
 void start() {
 // TUTTE LE FUNZIONI PER LE FINESTRE...
-    // removeLastLine();
+
+    // la classifica deve avere 11 righe, la 11esima riga è quella del giocatore
+    // che viene aggiornata ogni volta che si avvia il gioco.
+    // controlli per classifica.txt
+    checkClassifica();
+    removeLastLine();
     int yMax, xMax;
     getmaxyx(stdscr, yMax, xMax);
 
@@ -195,6 +201,7 @@ void start() {
             wclear(next);
         }
         game.nextBlock.Draw(next, 0);
+        game.classifica.giocatore.punteggio = game.grid.score;
 // ==================================================
         loop = game.isGameOver();
         
@@ -242,7 +249,7 @@ void newGame() {
     wrefresh(newWin);
     nodelay(stdscr, FALSE); // to wait for input
     char c = getch();
-    if (c == 'y') {
+    if (c != '\0') {
         delwin(newWin);
         start();
     } else {
@@ -273,4 +280,44 @@ void removeLastLine() {
         outputFile << lines[j] << endl;
     }
     outputFile.close();
+}
+
+void checkClassifica() {
+    std::ifstream inFile("classifica.txt");
+    if (!inFile) {
+        std::cerr << "Unable to open file classifica.txt";
+        exit(1);
+    }
+
+    int count = 0;
+    char ch;
+    bool lastCharIsNewline = false;
+
+    while (inFile.get(ch)) {
+        if (ch == '\n') {
+            count++;
+            lastCharIsNewline = true;
+        } else {
+            lastCharIsNewline = false;
+        }
+    }
+
+    inFile.close();
+
+    if (!lastCharIsNewline) {
+        std::ofstream outFile;
+        outFile.open("classifica.txt", std::ios_base::app);
+        outFile << "\n";
+        outFile.close();
+        count++;
+    }
+
+    if (count < 11) {
+        std::ofstream outFile;
+        outFile.open("classifica.txt", std::ios_base::app);
+        for (int i = count; i < 11; i++) {
+            outFile << "AAA 0\n";
+        }
+        outFile.close();
+    }
 }

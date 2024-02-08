@@ -2,6 +2,7 @@
     "files.associations": {
         "cstdlib": "cpp",
         "iosfwd": "cpp",
-        "ostream": "cpp"
+        "ostream": "cpp",
+        "fstream": "cpp"
     }
 }

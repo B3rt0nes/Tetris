@@ -27,6 +27,10 @@ class Classifica {
 
         void ordinaClassifica();
 
+        int partition(player arr[], int low, int high);
+
+        void quickSort(player arr[], int low, int high);
+
         void createArray();
 
         // void saveClassifica();
