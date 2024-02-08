@@ -1,0 +1,137 @@
+\documentclass[a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{xcolor}
+\usepackage[italian]{babel}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{enumerate}
+
+\usepackage{epigraph}
+\renewcommand{\epigraphrule}{0pt}
+\renewcommand{\textflush}{flushepinormal}
+\setlength{\epigraphwidth}{0.3\textwidth}
+\renewenvironment{flushepinormal}{}{\vspace*{-\baselineskip}}
+
+\title{Tetris \\
+\large Relazione del progetto per l'insegnamento di Programmazione}
+\author{
+  Alberto Zuccari - 1029107
+}
+
+\date{
+	Universit\`a di Bologna \\
+  \today
+}
+
+\begin{document}
+
+\maketitle
+\thispagestyle{empty}
+
+\section{Funzionalità}
+
+Tetris è un videogioco di logica e ragionamento russo inventato da Aleksej Leonidovič Pažitnov nel 1984, mentre lavorava al centro di calcolo dell'Accademia delle scienze dell'URSS di Mosca.
+
+\subsection{Programmazione}
+
+Il programma, scritto usando \verb!C++11! e fa grande uso delle classi per lavorare.
+
+
+\noindent
+Le specifiche del progetto prevedono serie limitazioni sull'uso della \emph{Standard Template Library}. I contenitori come \verb!vector!, \verb!list! e \verb!map! e \verb!string!, per esempio, sono vietati. Per far fronte a tali sono stati utilizzati gli array di caratteri al posto delle string.
+
+\section{Il menù}
+Alla chiamata della funzione \verb!menu()! viene visualizzato il menù, questo semplicemente renderizzando uno schermo una finestra e rimanendo in un ciclo \verb!while! chiamato dal metodo \verb!scelte! (implementato per evitare la duplicazione di codice uguale) sempre vero finché non si preme il tasto \verb!enter! che selezionerà anche cosa andare a vedere, se far partire il gioco oppure renderizzare la classifica.
+
+\section{Game}
+il metodo Game è quello chiamato per far partire il gioco ed è il pilastro portante del programma. \\
+Come prima cosa controlla se il file della \color{green}\verb|classifica.txt |\color{black} segue determinate regole per evitare che il costruttore della classe \color{cyan}\verb!Classifica !\color{black} riporti un errore di \verb!segmentation fault!.
+Viene poi rimossa l'ultima riga del file \color{green}\verb|classifica.txt |\color{black} riservato per il salvataggio del nome e punteggio del giocatore.\\
+Vengono poi caricate le finestre di gioco, quella delle informazioni e quella con il prossimo blocco.
+Poi viene creato l'oggetto game di tipo Game e viene richiesto all'utente il nome. \\
+Il nome è limitato ad una dimensione di 3 caratteri per riprendere lo stile arcade in cui si limitavano i caratteri a 3 per questioni di memoria. \\
+Dopo l'inizializzazione di alcune variabili necessarie per il corretto funzionamento del gioco parte il loop di gioco.\\ 
+Durante tutte le iterazioni del loop di gioco vengono ricontrollate e ristampate a schermo le seguenti informazioni:
+\begin{itemize}
+    \item se lo stato del gioco è in GameOver
+    \item stampa della classifica nella barra a sinistra
+    \item disegno del prossimo blocco nella barra a sinistra
+    \item seguendo un timer di 200ms viene disegnato e fatto cadere il blocco corrente
+    \item infine viene gestito il caso di GameOver
+    \begin{itemize}
+        \item viene ordinata la classifica in ordine decrescente 
+        \item viene salvato il punteggio del giocatore sul file \color{green}\verb|classifica.txt |\color{black}
+        \item aspetta 1 secondo e poi torna al menù
+    \end{itemize}
+\end{itemize}
+
+\subsection{La classe Game}
+La classe game è il cuore del gioco, essa sfrutta le classi \color{cyan}\verb!Grid !\color{black},  \color{cyan}\verb!Classifica !\color{black} e \color{cyan}\verb!Block !\color{black} per dare la possibilità di creare un unico elemento game per ogni partita.\\ 
+La classe è divista tra \verb!private! e \verb!public! in questo modo:
+\begin{itemize}
+    \item \verb!public: !
+    \begin{itemize}
+        \item \verb!Game();!
+        \item \verb!Block getRandomBlock();!
+        \item \verb!Grid grid;!
+        \item \verb!Classifica classifica;!
+        \item \verb!void getAllBlocks(int[], int);!
+        \item \verb!void draw(WINDOW * win);!
+        \item \verb!void handleInput(WINDOW * win);!
+        \item \verb!void MoveBlockLeft();!
+        \item \verb!void MoveBlockRight();!
+        \item \verb!void MoveBlockDown();!
+        \item \verb!bool isGameOver();!
+        \item \verb!bool gameOver;!
+        \item \verb!Block nextBlock;!
+    \end{itemize}
+    \item \verb!private:!
+        \begin{itemize}
+            \item \verb!int blocks[7];!
+            \item \verb!Block currentBlock;!
+            \item \verb!bool isBlockOutside();!
+            \item \verb!void rotateBlock();!
+            \item \verb!void lockBlock();!
+            \item \verb!bool blockFits();!
+        \end{itemize}
+\end{itemize}
+
+Particolarmente rilevanti sono le classi di movimento del blocco e della gestione delle collisioni,
+per il movimento viene controllato sempre se non si è in gameOver e in caso affermativo si sposta il blocco delle coordinate rispettive $(\pm y, \pm x)$ attrraverso il metodo \verb!Block::move()! della classe Block. \\
+Subito dopo il movimento si controlla se il il movimento è invalido e se non si può spostare il blocco in quella direzione si reimpostano le coordinate allo stato iniziale prima della chiamata dell metodo di movimento.
+\\ \\
+Per le collisioni si utilizza il metodo \verb!isBlockOutside! che crea una variabile di tipo \verb!position! ovvero un vettore di 8 coordinate.
+Questo array verrà poi controllato tutto verificando se almeno una delle coordinate non rientri nei limiti della grid. Ciò sfruttando il metodo \verb!isCellOutside! della classe \verb!Grid!
+
+\subsection{La classe Grid}
+Viene utilizzata per rappresentare un tabellone di gioco basato su griglia, qua abbiamo una matrice \verb!grid! di dimensione 20 x 20 che contiene dei numeri che vanno dall' 1 all'8 per disporre i colori dei blocchi. \\
+Contiene anche i metodi che controllano se una riga viene riempita e nel caso la spostano in basso, e la gestione del punteggio, che aumenta ogni volta che si completano delle righe.
+
+\subsection{La classe Block}
+È usata per gestire: movimento e rotazione dei blocchi. \\
+per spiegare come funzionano i blocchi è necessario introdurre due semplici strutture:
+\begin{itemize}
+    \item \verb|coordinate| \\ contiene due valori interi rappresentanti la $x$ e la $y$ dei caratteri che compongono i blocchi
+    \item \verb|position| \\ è semplicemente un vettore di 8 coordinate, perché ogni blocco è costituito da 4 quadrati e per formare un quadrato sono necessari 2 caratteri, quindi abbiamo $2$caratteri $\cdot \ 4$quadrati $=8$
+\end{itemize}
+Nel costruttore viene poi inizializzato un vettore di \verb|position| che contiene 4 elementi, questo perché ogni blocco ha 4 stati di rotazione, indicati dall'\verb|id| della classe. \\ 
+Abbiamo poi il rotation state, che indica quale tipo di rotazione ha assunto il blocco.\\
+Gli ultimi elementi della classe sono gli offset, ovvero due valor x e y che rappresentano la distanza dall'origine degli assi del blocco, gli offset sono richiamati nella funzione \verb|getPos| per indicare la posizione del blocco.
+\subsubsection{Le classi figlie di Block}
+Facendo uso dell'ereditarietà sono state costruite 7 classi figlie di \color{cyan}\verb|Block|\color{black}, una per ogni tetramino. Nella definizione del costruttore delle classi si inizializzano subito tutte le coordinate dei caratteri che compongono i quadrati dei tetramini. E si imposta la posizione di partenza del blocco in per una corretta visualizzazione alla generazione del blocco.
+
+\subsection{La classe Classifica}
+Infine la classe classifica gestisce la lettura e la scrittura sul file \color{green}\verb|classifica.txt |\color{black} \\
+Che, legge e salva su di un array gli elementi della classifica per evitare la continua apertura e chiusura del file.
+È poi presente il metodo che fa inserire al giocatore il nome, e quelli che gestiscono l'ordinamento della classifica.
+
+\color{black}
+\section{Classifica}
+La classifica, viene visualizzata come un proseguimento del menù.
+Vengono visualizzati solamente i primi 10° Giocatori anche perché verranno salvati sul file \color{green}\verb|classifica.txt |\color{black} solamente i 10 giocatori con il punteggio più alto.
+
+Per prendere i dati dal file \color{green}\verb!classifica.txt !\color{black} utilizziamo i metodi della libreria \verb!<fstring>! per ragioni di specifiche del progetto.
+L'acquisizione dei caratteri avviene tramite un ciclo \verb!while! che stampa utilizzando il metodo \verb!mvwaddch()! per stampare carattere per carattere ogni elemento del file.
+Infine, viene anche utilizzato il metodo \verb!mvwprintw()! per stampare la posizione in classifica dei nomi presenti nel file.
+
+\end{document}

@@ -10,7 +10,7 @@ class Grid {
         bool isCellEmpty(int row, int column);
         int clearFullRows();
 
-        char grid[22][22];
+        char grid[20][20];
         int score;
         int lines;
         

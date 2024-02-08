@@ -12,6 +12,7 @@ using namespace std;
 
 void game();
 void menu();
+void scelte(WINDOW * win);
 void checkClassifica();
 void classifica();
 void removeLastLine();
@@ -154,7 +155,6 @@ void game() {
 
     /*LOOP DI GIOCO*/
     bool loop = game.isGameOver();
-    int nap = 0;
     int currentNext = game.nextBlock.id;
     double lastUpdateTime = 0;
     while (!loop){
@@ -199,15 +199,9 @@ void game() {
         if (game.isGameOver() == true) {
             game.classifica.endGame(game.grid.score);
 
-            game.grid.initGrid();
-            game.grid.printGrid(gamewin);
-
-            mvwprintw(gamewin, 10, 6, "GAME OVER");
-            wrefresh(gamewin);
-            game.gameOver = false;
+            napms(1000);
             menu();
         }
-        napms(nap);
     }
 
     
@@ -243,16 +237,27 @@ void classifica() {
     inFile.close();
 
     
-    int choice; 
-    int highlight = 0;
+    scelte(classwin);
+
+    getch();
+    endwin();
+    delwin(classwin); // delete the window to free memory
+}
+
+void scelte(WINDOW * win) {
+    int choice;
+    int highlight = 1;
+    int yMax, xMax;
+    getmaxyx(win, yMax, xMax);
+
     while(1) {
         for (int i = 0; i < 2; i++) {
             if (i == highlight)
-                wattron(classwin, A_REVERSE);
-            mvwprintw(classwin, i+2, 3, opt[i]);
-            wattroff(classwin, A_REVERSE);
+                wattron(win, A_REVERSE); // Evidenzia la scelta corrente
+            mvwprintw(win, i+2, 3, opt[i]);
+            wattroff(win, A_REVERSE);
         }
-        choice = wgetch(classwin);
+        choice = wgetch(win); // get user input
 
         switch(choice) {
             case KEY_UP:
@@ -262,32 +267,27 @@ void classifica() {
                 break;
             case KEY_DOWN:
                 highlight++;
-                if(highlight > 3-1)
-                    highlight = 3-1;
+                if(highlight > 2-1)
+                    highlight = 2-1;
                 break;
             default:
                 break;
         }
-        if(choice == 10)
+        if(choice == 10) // if the user presses enter
             break;
     }
     // handle the choice
     switch(highlight) {
         case 0:
-            delwin(classwin);
+            delwin(win);
             game();
             break;
         case 1:
-            delwin(classwin);
-            classifica();
+            delwin(win);
             break;
         default:
             break;
     }
-
-    getch();
-    endwin();
-    delwin(classwin); // delete the window to free memory
 }
 
 void removeLastLine() {

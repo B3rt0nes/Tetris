@@ -21,8 +21,8 @@ void Grid::printGrid(WINDOW * win){
     box(win, 0, 0);
     wborder(win, '|', '|', '-', '-', '+', '+', '+', '+'); // set the border
     
-    for(int row = 0; row <= numRow; row++){
-        for(int col = 0; col <= numCol; col++){
+    for(int row = 0; row < numRow; row++){
+        for(int col = 0; col < numCol; col++){
             if (grid[row][col] == '1') {
                 wattron(win, COLOR_PAIR(1));
                 mvwprintw(win, row+1, col+1, "%c", grid[row][col]);
@@ -51,7 +51,7 @@ void Grid::printGrid(WINDOW * win){
                 wattron(win, COLOR_PAIR(7));
                 mvwprintw(win, row+1, col+1, "%c", grid[row][col]);
                 wattroff(win, COLOR_PAIR(7));
-            } else if (grid[row][col] == '/') {
+            } else if (grid[row][col] == '8') {
                 wattron(win, COLOR_PAIR(8));
                 mvwprintw(win, row+1, col+1, "%c", grid[row][col]);
                 wattroff(win, COLOR_PAIR(8));
@@ -92,12 +92,10 @@ int Grid::clearFullRows() {
             deleteRow(row);
             completed++; 
         } else if (completed > 0) {
-            if (completed >= 4) {
-                score += 10;
-            }
             moveRowsDown(row, completed);
         }
     }
+    score += (completed * 10);
     return completed;
 }
 
@@ -107,7 +105,6 @@ bool Grid::isRowFull(int row) {
             return false;
         }
     }
-    score += 10;
     lines++;
     return true;
 }
