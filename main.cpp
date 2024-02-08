@@ -3,12 +3,15 @@
 #include <ncurses.h>
 #include <array>
 #include <ctime>
+#include <cstring>
 
 #include "game.hpp"
 
 using namespace std;
 
 void start();
+void newGame();
+void removeLastLine();
 
 const int mH = 15;
 const int mW = 20;
@@ -137,6 +140,7 @@ int main (int argc, char ** argv) {
 
 void start() {
 // TUTTE LE FUNZIONI PER LE FINESTRE...
+    // removeLastLine();
     int yMax, xMax;
     getmaxyx(stdscr, yMax, xMax);
 
@@ -197,11 +201,10 @@ void start() {
 
         wrefresh(gamewin);
         wrefresh(infowin);  
-        // game.classifica.refreshClassifica();
         wrefresh(next);
         
-        timeout(0); // Setta il timer a 0
-    
+        timeout(0); 
+        
         game.handleInput(gamewin);
 
         // Se sono passati 200ms dall'ultimo aggiornamento, muovi il blocco in basso
@@ -217,11 +220,57 @@ void start() {
 
             mvwprintw(gamewin, 10, 6, "GAME OVER");
             wrefresh(gamewin);
-            nap = 2000; 
             game.gameOver = false;
+            newGame();
         }
         napms(nap);
     }
 
     
+}
+
+void newGame() {
+    int yMax, xMax;
+    getmaxyx(stdscr, yMax, xMax);
+    WINDOW * newWin = newwin(mH, mW, (yMax-mH)/2, (xMax-mW)/2);
+    box(newWin, 0, 0);
+
+    mvwprintw(newWin, 2, 3, "Nuova partita?");
+    mvwprintw(newWin, 3, 4, "any char T.C");
+    mvwprintw(newWin, 5, 2, "ctrl+c to close");
+
+    wrefresh(newWin);
+    nodelay(stdscr, FALSE); // to wait for input
+    char c = getch();
+    if (c == 'y') {
+        delwin(newWin);
+        start();
+    } else {
+        removeLastLine();
+        endwin();
+    }
+}
+
+void removeLastLine() {
+    const int MAX_RIGHE = 11;
+    const int MAX_CARATTERI = 256;
+
+    char lines[MAX_RIGHE][MAX_CARATTERI];
+    char line[MAX_CARATTERI];
+    ifstream file("classifica.txt");
+
+    // Leggi tutte le righe in un array
+    int i = 0;
+    while (file.getline(line, MAX_CARATTERI) && i < MAX_RIGHE) {
+        strncpy(lines[i], line, MAX_CARATTERI);
+        i++;
+    }
+    file.close();
+
+    // Riscrivi il file con le righe rimanenti, tranne l'ultima
+    ofstream outputFile("classifica.txt");
+    for (int j = 0; j < i - 1; j++) {
+        outputFile << lines[j] << endl;
+    }
+    outputFile.close();
 }

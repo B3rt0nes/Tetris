@@ -13,11 +13,11 @@ Classifica::Classifica() {
     NUM_RIGHE = 10; // Assicurati che NUM_RIGHE sia coerente con la dimensione di podio
     ifstream file("classifica.txt");
 
-    for (int riga = 0; riga < NUM_RIGHE; riga++) {
+    for (int riga = 0; riga < NUM_RIGHE+1; riga++) {
         file >> podio[riga].nome >> podio[riga].punteggio;
     }
-
     file.close();
+
     getmaxyx(stdscr, yMax, xMax);
     classWin = newwin(13, 22, (yMax - 22 + 18) / 2, (xMax / 2) - 22 + 1);
 
@@ -72,7 +72,7 @@ void Classifica::addPlayer() {
 
 // Funzione per ordinare la classifica
 void Classifica::ordinaClassifica() {
-    for (int i = 0; i < NUM_RIGHE - 1; i++) { // Bubble sort
+    for (int i = 0; i < NUM_RIGHE; i++) { // Bubble sort
         for (int j = i + 1; j < NUM_RIGHE; j++) {
             if (podio[i].punteggio < podio[j].punteggio) {
                 player temp = podio[i];
@@ -90,4 +90,5 @@ void Classifica::createArray() {
     for (int i = 0; i < NUM_RIGHE; i++) {
         outputFile << podio[i].nome << " " << podio[i].punteggio << endl;
     }
+    outputFile.close();
 }

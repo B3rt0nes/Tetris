@@ -145,7 +145,6 @@ void Game::lockBlock() {
     currentBlock = nextBlock;
     if (blockFits() == false) {
         gameOver = true;
-        classifica.addScore(grid.score);
         return;
     }
     nextBlock = getRandomBlock();
@@ -161,11 +160,3 @@ bool Game::blockFits() {
     }
     return true;
 }
-
-void Game::Reset() {
-    grid.initGrid();
-    getAllBlocks(blocks, 7);
-    currentBlock = getRandomBlock();
-    nextBlock = getRandomBlock();
-}
-

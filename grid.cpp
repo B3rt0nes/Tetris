@@ -1,8 +1,7 @@
 #include "grid.hpp"
 
 
-Grid::Grid()
-{
+Grid::Grid() {
     numCol = 20;
     numRow = 20;
     score = 0;

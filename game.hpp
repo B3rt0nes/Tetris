@@ -15,7 +15,6 @@ class Game {
         void MoveBlockLeft();
         void MoveBlockRight();
         void MoveBlockDown();
-        void Reset();
         bool isGameOver();
 
         bool gameOver;
